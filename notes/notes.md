@@ -13,3 +13,9 @@ It is possible to not create a `NewServeMux` and just do `HandleFunc`. This crea
 
 - Its only possible to call `w.WriteHeader` once per reponse
 - If not called explicitly, the first `w.Write` will send 200 OK
+
+## Application organisation
+
+- `cmd` - application specific code for the execuable of the project
+- `internal` - non application specific code like validation and sql models
+- `ui` for the UI assets
