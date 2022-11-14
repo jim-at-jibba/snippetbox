@@ -2,8 +2,10 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"strconv"
+	"text/template"
 )
 
 // Define a home handler which writes a byte slice containing
@@ -17,7 +19,23 @@ func home(w http.ResponseWriter, r *http.Request) {
 		http.NotFound(w, r)
 		return
 	}
-	w.Write([]byte("Hello"))
+
+	// Use the template.ParseFiles function to read the template file into a
+	// template set.
+	ts, err := template.ParseFiles("./ui/html/pages/home.tmpl.html")
+	if err != nil {
+		log.Print(err.Error())
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+
+	// we then execute the methong on the template.
+	// the last param to Execute() is the dynamic data
+	err = ts.Execute(w, nil)
+	if err != nil {
+		log.Print(err.Error())
+		http.Error(w, "Internal Server error", http.StatusInternalServerError)
+	}
 }
 
 // snippetView handler
