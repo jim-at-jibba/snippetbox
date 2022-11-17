@@ -4,6 +4,7 @@ import (
 	"flag"
 	"log"
 	"net/http"
+	"os"
 	"path/filepath"
 )
 
@@ -12,6 +13,9 @@ func main() {
 
 	// this instantiates the new variables from the flags above
 	flag.Parse()
+
+	infoLog := log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
+	errorLog := log.New(os.Stderr, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
 	// User the http.NewServerMux() to initialise a new router
 	mux := http.NewServeMux()
 
@@ -26,11 +30,16 @@ func main() {
 	mux.HandleFunc("/snippet/view", snippetView)
 	mux.HandleFunc("/snippet/create", snippetCreate)
 
+	srv := &http.Server{
+		Addr:     *addr,
+		ErrorLog: errorLog,
+		Handler:  mux,
+	}
 	// Use http.ListenAndServ() fun to start a new server
 	// take 2 params, address (:4000) and the servemux
-	log.Printf("Starting server on %s 🚀", *addr)
-	err := http.ListenAndServe(*addr, mux)
-	log.Fatal(err)
+	infoLog.Printf("Starting server on %s 🚀", *addr)
+	err := srv.ListenAndServe()
+	errorLog.Fatal(err)
 }
 
 type neuteredFileSystem struct {

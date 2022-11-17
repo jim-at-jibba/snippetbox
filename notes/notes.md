@@ -41,3 +41,12 @@ func (h *home) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 - Because `serveMux` also has `ServeHTTP()` it also satifies the interface so it can help to thnk of it as a _special kind of handler_
 - All requests are handled concurrently. This makes it super fast but you will need to guard against race conditions
+
+## Logging
+
+- By having your logs output to stdin and stderr we can manage them independently based on env. Locally its fine to have them output to your terminal. But live we could write them to a file to be picked up and processed later.
+
+```bash
+# >> appends to an existing file
+go run ./cmd/web >>/tmp/info.log 2>>/tmp/error.log
+```
