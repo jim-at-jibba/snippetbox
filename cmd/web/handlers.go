@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"strconv"
 	"text/template"
@@ -10,7 +9,7 @@ import (
 
 // Define a home handler which writes a byte slice containing
 // "Hello from snippet box"
-func home(w http.ResponseWriter, r *http.Request) {
+func (app *applicaion) home(w http.ResponseWriter, r *http.Request) {
 	// Check if the current request url exactly matches "/".
 	// If it doesnt return 404
 	// IMPORTANT: We return from the handler. If we did not the handler
@@ -31,7 +30,7 @@ func home(w http.ResponseWriter, r *http.Request) {
 	// template set.
 	ts, err := template.ParseFiles(files...)
 	if err != nil {
-		log.Print(err.Error())
+		app.errorLog.Print(err.Error())
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
 		return
 	}
@@ -40,13 +39,13 @@ func home(w http.ResponseWriter, r *http.Request) {
 	// the last param to Execute() is the dynamic data
 	err = ts.ExecuteTemplate(w, "base", nil)
 	if err != nil {
-		log.Print(err.Error())
+		app.errorLog.Print(err.Error())
 		http.Error(w, "Internal Server error", http.StatusInternalServerError)
 	}
 }
 
 // snippetView handler
-func snippetView(w http.ResponseWriter, r *http.Request) {
+func (app *applicaion) snippetView(w http.ResponseWriter, r *http.Request) {
 	// Extract the value of the id
 	// convert it to an interger using `strconv.Atoi`, if it cant convert it
 	// or its less that 1 return 404
@@ -59,7 +58,7 @@ func snippetView(w http.ResponseWriter, r *http.Request) {
 }
 
 // snippetCreate
-func snippetCreate(w http.ResponseWriter, r *http.Request) {
+func (app *applicaion) snippetCreate(w http.ResponseWriter, r *http.Request) {
 	// r.Method to check whether the request is using POST or not
 	if r.Method != http.MethodPost {
 		//Send 405 status code and message

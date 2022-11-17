@@ -8,6 +8,13 @@ import (
 	"path/filepath"
 )
 
+// Define an application struct to hold the application-wide dependencies for
+// the web app.
+type applicaion struct {
+	errorLog *log.Logger
+	infoLog  *log.Logger
+}
+
 func main() {
 	addr := flag.String("addr", ":4000", "HTTP netwrok address")
 
@@ -16,6 +23,13 @@ func main() {
 
 	infoLog := log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
 	errorLog := log.New(os.Stderr, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
+
+	// Initialise a new instance of our applicaion struct, containing the deps
+	app := &applicaion{
+		errorLog: errorLog,
+		infoLog:  infoLog,
+	}
+
 	// User the http.NewServerMux() to initialise a new router
 	mux := http.NewServeMux()
 
@@ -26,9 +40,9 @@ func main() {
 	// use mux.Handle to register the file server as a handler
 	mux.Handle("/static/", http.StripPrefix("/static", fileServer))
 
-	mux.HandleFunc("/", home)
-	mux.HandleFunc("/snippet/view", snippetView)
-	mux.HandleFunc("/snippet/create", snippetCreate)
+	mux.HandleFunc("/", app.home)
+	mux.HandleFunc("/snippet/view", app.snippetView)
+	mux.HandleFunc("/snippet/create", app.snippetCreate)
 
 	srv := &http.Server{
 		Addr:     *addr,
