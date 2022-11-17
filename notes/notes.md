@@ -1,5 +1,11 @@
 # Notes
 
+## modules
+
+- to remove a package either:
+  - remove references to the package in your code and run `go mod tidy`
+  - run `go get github.com/package-name@none`
+
 ## **fix path** and **subtree paths**
 
 - fix path dont end in a slash `/snippets/view` etc
