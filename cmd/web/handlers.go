@@ -15,7 +15,7 @@ func (app *applicaion) home(w http.ResponseWriter, r *http.Request) {
 	// IMPORTANT: We return from the handler. If we did not the handler
 	// would keep executing
 	if r.URL.Path != "/" {
-		http.NotFound(w, r)
+		app.notFound(w)
 		return
 	}
 
@@ -31,7 +31,7 @@ func (app *applicaion) home(w http.ResponseWriter, r *http.Request) {
 	ts, err := template.ParseFiles(files...)
 	if err != nil {
 		app.errorLog.Print(err.Error())
-		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		app.serverError(w, err)
 		return
 	}
 
@@ -40,7 +40,7 @@ func (app *applicaion) home(w http.ResponseWriter, r *http.Request) {
 	err = ts.ExecuteTemplate(w, "base", nil)
 	if err != nil {
 		app.errorLog.Print(err.Error())
-		http.Error(w, "Internal Server error", http.StatusInternalServerError)
+		app.serverError(w, err)
 	}
 }
 
@@ -51,7 +51,7 @@ func (app *applicaion) snippetView(w http.ResponseWriter, r *http.Request) {
 	// or its less that 1 return 404
 	id, err := strconv.Atoi(r.URL.Query().Get("id"))
 	if err != nil || id < 1 {
-		http.NotFound(w, r)
+		app.notFound(w)
 		return
 	}
 	fmt.Fprintf(w, "Display a specifc snippet with ID %d", id)
@@ -68,7 +68,8 @@ func (app *applicaion) snippetCreate(w http.ResponseWriter, r *http.Request) {
 
 		// this is a shortcut for the above
 		// we are passing w to http.Error that sends the reponse for us
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		// http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		app.clientError(w, http.StatusMethodNotAllowed)
 		return
 	}
 
