@@ -8,7 +8,7 @@ import (
 
 // The serverError helper writes an error message and stacktrace
 // Then sends generic 500
-func (app *applicaion) serverError(w http.ResponseWriter, err error) {
+func (app *application) serverError(w http.ResponseWriter, err error) {
 	trace := fmt.Sprintf("%s\n%s", err.Error(), debug.Stack())
 	// This allows us to report the file name and line number of the file that
 	// the error originated from (not this helper) "one step back"
@@ -19,10 +19,10 @@ func (app *applicaion) serverError(w http.ResponseWriter, err error) {
 }
 
 // The clientError heler sends a specic status code and description to the user.
-func (app *applicaion) clientError(w http.ResponseWriter, status int) {
+func (app *application) clientError(w http.ResponseWriter, status int) {
 	http.Error(w, http.StatusText(status), status)
 }
 
-func (app *applicaion) notFound(w http.ResponseWriter) {
+func (app *application) notFound(w http.ResponseWriter) {
 	app.clientError(w, http.StatusNotFound)
 }

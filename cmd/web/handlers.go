@@ -9,7 +9,7 @@ import (
 
 // Define a home handler which writes a byte slice containing
 // "Hello from snippet box"
-func (app *applicaion) home(w http.ResponseWriter, r *http.Request) {
+func (app *application) home(w http.ResponseWriter, r *http.Request) {
 	// Check if the current request url exactly matches "/".
 	// If it doesnt return 404
 	// IMPORTANT: We return from the handler. If we did not the handler
@@ -45,7 +45,7 @@ func (app *applicaion) home(w http.ResponseWriter, r *http.Request) {
 }
 
 // snippetView handler
-func (app *applicaion) snippetView(w http.ResponseWriter, r *http.Request) {
+func (app *application) snippetView(w http.ResponseWriter, r *http.Request) {
 	// Extract the value of the id
 	// convert it to an interger using `strconv.Atoi`, if it cant convert it
 	// or its less that 1 return 404
@@ -58,7 +58,7 @@ func (app *applicaion) snippetView(w http.ResponseWriter, r *http.Request) {
 }
 
 // snippetCreate
-func (app *applicaion) snippetCreate(w http.ResponseWriter, r *http.Request) {
+func (app *application) snippetCreate(w http.ResponseWriter, r *http.Request) {
 	// r.Method to check whether the request is using POST or not
 	if r.Method != http.MethodPost {
 		//Send 405 status code and message
