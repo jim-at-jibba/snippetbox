@@ -50,3 +50,33 @@ func (h *home) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 # >> appends to an existing file
 go run ./cmd/web >>/tmp/info.log 2>>/tmp/error.log
 ```
+
+## DI
+
+- If your handlers are spread over multiple pacakges, DI used in this porject wont work. You can a config pacakge exporting the application config and haave your handler close over it to form a closure
+
+```go
+// rough example
+func main() {
+    app := &config.Application{
+        ErrorLog: log.New(os.Stderr, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
+    }
+
+    mux.Handle("/", examplePackage.ExampleHandler(app))
+}
+
+func ExampleHandler(app *config.Application) http.HandlerFunc {
+    return func(w http.ResponseWriter, r *http.Request) {
+        ...
+        ts, err := template.ParseFiles(files...)
+        if err != nil {
+            app.ErrorLog.Print(err.Error())
+            http.Error(w, "Internal Server Error", 500)
+            return
+        }
+        ...
+    }
+}
+```
+
+- A more concrete example can be found [Here](https://gist.github.com/alexedwards/5cd712192b4831058b21)
