@@ -1,10 +1,13 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"strconv"
 	"text/template"
+
+	"github.com/jim-at-jibba/snippetbox/internal/models"
 )
 
 // Define a home handler which writes a byte slice containing
@@ -54,7 +57,19 @@ func (app *application) snippetView(w http.ResponseWriter, r *http.Request) {
 		app.notFound(w)
 		return
 	}
-	fmt.Fprintf(w, "Display a specifc snippet with ID %d", id)
+
+	snippet, err := app.snippets.Get(id)
+	if err != nil {
+		// Current best practice for checking for specific error types
+		if errors.Is(err, models.ErrNoRecord) {
+			app.notFound(w)
+		} else {
+			app.serverError(w, err)
+		}
+		return
+	}
+
+	fmt.Fprintf(w, "%+v", snippet)
 }
 
 // snippetCreate

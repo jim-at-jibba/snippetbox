@@ -2,6 +2,7 @@ package models
 
 import (
 	"database/sql"
+	"errors"
 	"time"
 )
 
@@ -40,7 +41,30 @@ func (m *SnippetModel) Insert(title string, content string, expires int) (int, e
 
 // Get snippet by id
 func (m *SnippetModel) Get(id int) (*Snippet, error) {
-	return nil, nil
+	stmt := `SELECT id, title, content, created, expires FROM snippets
+  WHERE expires > UTC_TIMESTAMP() AND id = ?`
+
+	row := m.DB.QueryRow(stmt, id)
+
+	// Initialise a pointer to a new zeroes Snippet struct
+	s := &Snippet{}
+
+	// Notice the arguments to row.Scan are *pointers* to the place you want
+	// to copy data into, the number of augments must be exactly the same as the
+	// number of columns returned
+	err := row.Scan(&s.ID, &s.Title, &s.Content, &s.Create, &s.Expires)
+	if err != nil {
+		//If the query returns no rows, then row.Scan will return sql.ErrNoRows
+		if errors.Is(err, sql.ErrNoRows) {
+			// We return our own error here to help encapsulate the model. This means
+			// our app is not concerned with datastore specific errors
+			return nil, ErrNoRecord
+		} else {
+			return nil, err
+		}
+	}
+
+	return s, nil
 }
 
 // Latest - get last 10 snippets
