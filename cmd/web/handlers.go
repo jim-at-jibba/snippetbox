@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
-	"text/template"
 
 	"github.com/jim-at-jibba/snippetbox/internal/models"
 )
@@ -22,29 +21,38 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Initialise a slice containing the paths to 2 files. The ORDER MATTERS
-	// The base template must be first
-	files := []string{
-		"./ui/html/base.tmpl.html",
-		"./ui/html/partials/nav.tmpl.html",
-		"./ui/html/pages/home.tmpl.html",
-	}
-	// Use the template.ParseFiles function to read the template file into a
-	// template set.
-	ts, err := template.ParseFiles(files...)
+	snippets, err := app.snippets.Latest()
 	if err != nil {
-		app.errorLog.Print(err.Error())
 		app.serverError(w, err)
 		return
 	}
 
+	for _, snippet := range snippets {
+		fmt.Fprintf(w, "%+v\n", snippet)
+	}
+	// Initialise a slice containing the paths to 2 files. The ORDER MATTERS
+	// The base template must be first
+	// files := []string{
+	// 	"./ui/html/base.tmpl.html",
+	// 	"./ui/html/partials/nav.tmpl.html",
+	// 	"./ui/html/pages/home.tmpl.html",
+	// }
+	// Use the template.ParseFiles function to read the template file into a
+	// template set.
+	// ts, err := template.ParseFiles(files...)
+	// if err != nil {
+	// 	app.errorLog.Print(err.Error())
+	// 	app.serverError(w, err)
+	// 	return
+	// }
+
 	// we then execute the methong on the template.
 	// the last param to Execute() is the dynamic data
-	err = ts.ExecuteTemplate(w, "base", nil)
-	if err != nil {
-		app.errorLog.Print(err.Error())
-		app.serverError(w, err)
-	}
+	// err = ts.ExecuteTemplate(w, "base", nil)
+	// if err != nil {
+	// 	app.errorLog.Print(err.Error())
+	// 	app.serverError(w, err)
+	// }
 }
 
 // snippetView handler
