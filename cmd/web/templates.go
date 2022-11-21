@@ -8,5 +8,6 @@ import "github.com/jim-at-jibba/snippetbox/internal/models"
 // dynamic data
 
 type templateData struct {
-	Snippet *models.Snippet
+	Snippet  *models.Snippet
+	Snippets []*models.Snippet
 }
