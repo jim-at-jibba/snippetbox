@@ -86,3 +86,7 @@ func ExampleHandler(app *config.Application) http.HandlerFunc {
 ```
 
 - A more concrete example can be found [Here](https://gist.github.com/alexedwards/5cd712192b4831058b21)
+
+## DB
+
+- GO does not handle NULL values very well. You can use the `sql.NullString` type but a better, safer way to handle it is to not allow NULL values in your db schema with `NOT NULL`
