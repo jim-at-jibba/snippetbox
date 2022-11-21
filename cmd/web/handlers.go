@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
-	"text/template"
 
 	"github.com/jim-at-jibba/snippetbox/internal/models"
 )
@@ -30,31 +29,36 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 
 	// Initialise a slice containing the paths to 2 files. The ORDER MATTERS
 	// The base template must be first
-	files := []string{
-		"./ui/html/base.tmpl.html",
-		"./ui/html/partials/nav.tmpl.html",
-		"./ui/html/pages/home.tmpl.html",
-	}
-	// Use the template.ParseFiles function to read the template file into a
-	// template set.
-	ts, err := template.ParseFiles(files...)
-	if err != nil {
-		app.errorLog.Print(err.Error())
-		app.serverError(w, err)
-		return
-	}
-
-	data := &templateData{
-		Snippets: snippets,
-	}
+	// files := []string{
+	// 	"./ui/html/base.tmpl.html",
+	// 	"./ui/html/partials/nav.tmpl.html",
+	// 	"./ui/html/pages/home.tmpl.html",
+	// }
+	// // Use the template.ParseFiles function to read the template file into a
+	// // template set.
+	// ts, err := template.ParseFiles(files...)
+	// if err != nil {
+	// 	app.errorLog.Print(err.Error())
+	// 	app.serverError(w, err)
+	// 	return
+	// }
+	//
+	// data := &templateData{
+	// 	Snippets: snippets,
+	// }
 
 	// we then execute the methong on the template.
 	// the last param to Execute() is the dynamic data
-	err = ts.ExecuteTemplate(w, "base", data)
-	if err != nil {
-		app.errorLog.Print(err.Error())
-		app.serverError(w, err)
-	}
+	// err = ts.ExecuteTemplate(w, "base", data)
+	// if err != nil {
+	// 	app.errorLog.Print(err.Error())
+	// 	app.serverError(w, err)
+	// }
+
+	// Use the new render helper
+	app.render(w, http.StatusOK, "home.tmpl.html", &templateData{
+		Snippets: snippets,
+	})
 }
 
 // snippetView handler
@@ -79,31 +83,9 @@ func (app *application) snippetView(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Initialise slice containing the path to the view.tmpl.html file,
-	// plus the base layout ad nav
-	files := []string{
-		"./ui/html/base.tmpl.html",
-		"./ui/html/partials/nav.tmpl.html",
-		"./ui/html/pages/view.tmpl.html",
-	}
-
-	// parse the template files
-	ts, err := template.ParseFiles(files...)
-	if err != nil {
-		app.serverError(w, err)
-		return
-	}
-
-	// Create instance of a templateData struct holding the snippet
-	data := &templateData{
+	app.render(w, http.StatusOK, "view.tmpl.html", &templateData{
 		Snippet: snippet,
-	}
-
-	// execute them
-	err = ts.ExecuteTemplate(w, "base", data)
-	if err != nil {
-		app.serverError(w, err)
-	}
+	})
 }
 
 // snippetCreate
