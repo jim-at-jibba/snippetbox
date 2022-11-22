@@ -13,8 +13,9 @@ import (
 // dynamic data
 
 type templateData struct {
-	Snippet  *models.Snippet
-	Snippets []*models.Snippet
+	Snippet     *models.Snippet
+	Snippets    []*models.Snippet
+	CurrentYear int
 }
 
 func NewTemplateCache() (map[string]*template.Template, error) {

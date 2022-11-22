@@ -1,6 +1,5 @@
 {{define "base"}}
 <!DOCTYPE html>
-<!DOCTYPE html>
 <html lang="en">
   <head>
     <title>{{template "title" .}} - Snippet box</title>
@@ -25,7 +24,9 @@
     </header>
     {{template "nav" .}}
     <main>{{template "main" .}}</main>
-    <footer>Powered by <a href="https://golang.org">Go</a></footer>
+    <footer>
+      Powered by <a href="https://golang.org">Go</a> in {{.CurrentYear}}
+    </footer>
   </body>
 </html>
 {{end}}

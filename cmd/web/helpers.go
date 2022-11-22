@@ -5,7 +5,16 @@ import (
 	"fmt"
 	"net/http"
 	"runtime/debug"
+	"time"
 )
+
+// Create an newTemplateData() help, which returns a pointer to a templateData
+// struct Initialised with the current year.
+func (app *application) newTemplateData(r *http.Request) *templateData {
+	return &templateData{
+		CurrentYear: time.Now().Year(),
+	}
+}
 
 // The serverError helper writes an error message and stacktrace
 // Then sends generic 500
