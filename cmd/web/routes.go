@@ -6,7 +6,7 @@ import (
 )
 
 // The routes() method returns a servemux containin app routes
-func (app *application) routes() *http.ServeMux {
+func (app *application) routes() http.Handler {
 	mux := http.NewServeMux()
 
 	// Create a file server to serve our static files from ./ui/static
@@ -20,7 +20,7 @@ func (app *application) routes() *http.ServeMux {
 	mux.HandleFunc("/snippet/view", app.snippetView)
 	mux.HandleFunc("/snippet/create", app.snippetCreate)
 
-	return mux
+	return secureHeaders(mux)
 }
 
 type neuteredFileSystem struct {
