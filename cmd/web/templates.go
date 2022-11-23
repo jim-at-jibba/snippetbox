@@ -3,6 +3,7 @@ package main
 import (
 	"html/template"
 	"path/filepath"
+	"time"
 
 	"github.com/jim-at-jibba/snippetbox/internal/models"
 )
@@ -16,6 +17,19 @@ type templateData struct {
 	Snippet     *models.Snippet
 	Snippets    []*models.Snippet
 	CurrentYear int
+}
+
+func humanDate(t time.Time) string {
+	return t.Format("02 Jan 2006 at 15:04")
+}
+
+// Initialise a template.FuncMap object to store it in a global variable.
+// This is essentially a string-keyed map which actsas a lookup between
+// the names of our custom funcs and the funcs themselves
+// NOTE: custom template funcs can acceptas many params as needed
+// but must only return a single value except for an error
+var functions = template.FuncMap{
+	"humanDate": humanDate,
 }
 
 func NewTemplateCache() (map[string]*template.Template, error) {
@@ -34,7 +48,11 @@ func NewTemplateCache() (map[string]*template.Template, error) {
 		// Extract the file name and assign it to the name variable
 		name := filepath.Base(page)
 
-		ts, err := template.ParseFiles("./ui/html/base.tmpl.html")
+		// The template.FuncMap must be registered with the template set before
+		// you call the ParseFiles(). The means we have to use template.New() to
+		// create an empty template set, use the Funcs() to register the template.FuncMap
+		// then pass the file as normal
+		ts, err := template.New(name).Funcs(functions).ParseFiles("./ui/html/base.tmpl.html")
 		if err != nil {
 			return nil, err
 		}
