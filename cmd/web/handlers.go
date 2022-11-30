@@ -134,11 +134,11 @@ func (app *application) snippetCreatePost(w http.ResponseWriter, r *http.Request
 	// 	return
 	// }
 
-	err := r.ParseForm()
-	if err != nil {
-		app.clientError(w, http.StatusBadRequest)
-		return
-	}
+	// err := r.ParseForm()
+	// if err != nil {
+	// 	app.clientError(w, http.StatusBadRequest)
+	// 	return
+	// }
 
 	// Becaise values come from .Get as a string and we need a number we need to
 	// convert it
@@ -156,7 +156,7 @@ func (app *application) snippetCreatePost(w http.ResponseWriter, r *http.Request
 	// }
 	var form snippetCreateForm
 
-	err = app.formDecoder.Decode(&form, r.PostForm)
+	err := app.decodeePostForm(r, &form)
 	if err != nil {
 		app.clientError(w, http.StatusBadRequest)
 		return

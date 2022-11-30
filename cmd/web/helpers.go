@@ -2,10 +2,13 @@ package main
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"net/http"
 	"runtime/debug"
 	"time"
+
+	"github.com/go-playground/form/v4"
 )
 
 // Create an newTemplateData() help, which returns a pointer to a templateData
@@ -70,4 +73,28 @@ func (app *application) render(w http.ResponseWriter, status int, page string, d
 	// Write the contents of the buffer to the http.ResponseWriter. Note this is another
 	// time where we pass our http.ResponseWriter to a function that takes an io.Writer
 	buf.WriteTo(w)
+}
+
+// dst is the destination struct
+func (app *application) decodeePostForm(r *http.Request, dst any) error {
+	err := r.ParseForm()
+	if err != nil {
+		return err
+	}
+
+	err = app.formDecoder.Decode(dst, r.PostForm)
+
+	if err != nil {
+		// If we try to use an invalid dst the Decode metho will return
+		// an error
+		var invalidDecoderError *form.InvalidDecoderError
+
+		if errors.As(err, &invalidDecoderError) {
+			panic(err)
+		}
+
+		return err
+	}
+
+	return nil
 }
