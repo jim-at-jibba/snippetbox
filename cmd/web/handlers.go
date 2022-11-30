@@ -109,11 +109,12 @@ func (app *application) snippetCreate(w http.ResponseWriter, r *http.Request) {
 
 // Embedding the Validator means the snippetCreateForm "inherits" all the
 // fields and methods of our Validator "Composition over inheritance"
+// struct tags tell the decoder how to map HTML form value to the struct fields
 type snippetCreateForm struct {
-	Title   string
-	Content string
-	Expires int
-	validator.Validator
+	Title               string     `form:"title"`
+	Content             string     `form:"content"`
+	Expires             int        `form:"expires"`
+	validator.Validator `form:"-"` // this means ignore this
 }
 
 // snippetCreate
@@ -141,16 +142,24 @@ func (app *application) snippetCreatePost(w http.ResponseWriter, r *http.Request
 
 	// Becaise values come from .Get as a string and we need a number we need to
 	// convert it
-	expires, err := strconv.Atoi(r.PostForm.Get("expires"))
+	// expires, err := strconv.Atoi(r.PostForm.Get("expires"))
+	// if err != nil {
+	// 	app.clientError(w, http.StatusBadRequest)
+	// 	return
+	// }
+
+	// replaced with decoder
+	// form := snippetCreateForm{
+	// 	Title:   r.PostForm.Get("title"),
+	// 	Content: r.PostForm.Get("content"),
+	// 	Expires: expires,
+	// }
+	var form snippetCreateForm
+
+	err = app.formDecoder.Decode(&form, r.PostForm)
 	if err != nil {
 		app.clientError(w, http.StatusBadRequest)
 		return
-	}
-
-	form := snippetCreateForm{
-		Title:   r.PostForm.Get("title"),
-		Content: r.PostForm.Get("content"),
-		Expires: expires,
 	}
 
 	// fieldErrors := make(map[string]string)
